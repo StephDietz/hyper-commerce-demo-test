@@ -6,7 +6,7 @@ Example site:
 
 [hypermode-commerce.com](https://hypermode-commerce.com)
 
-Explainer Video:
+Explainer Video
 
 [![Hypermode Demo](https://img.youtube.com/vi/Me4YjNzR-cg/0.jpg)](https://www.youtube.com/watch?v=Me4YjNzR-cg)
 

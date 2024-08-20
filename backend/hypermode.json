@@ -1,0 +1,50 @@
+{
+  "$schema": "https://manifest.hypermode.com/hypermode.json",
+  "models": {
+    "minilm": {
+      "sourceModel": "sentence-transformers/all-MiniLM-L6-v2",
+      "provider": "hugging-face",
+      "host": "hypermode"
+    }
+  },
+  "hosts": {},
+  "collections": {
+    "productNames": {
+      "searchMethods": {
+        "searchMethod1": {
+          "embedder": "miniLMEmbed",
+          "index": {
+            "type": "sequential"
+          }
+        }
+      }
+    },
+    "productDescriptions": {
+      "searchMethods": {}
+    },
+    "productCategories": {
+      "searchMethods": {}
+    },
+    "productPrices": {
+      "searchMethods": {}
+    },
+    "productImages": {
+      "searchMethods": {}
+    },
+    "productStars": {
+      "searchMethods": {}
+    },
+    "isProductStocked": {
+      "searchMethods": {}
+    },
+    "cartIds": {
+      "searchMethods": {}
+    },
+    "cartProductIds": {
+      "searchMethods": {}
+    },
+    "cartQuantities": {
+      "searchMethods": {}
+    }
+  }
+}

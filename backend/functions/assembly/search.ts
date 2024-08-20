@@ -7,7 +7,7 @@ import { ProductSearchResult, ProductSearchObject, consts } from "./types";
 export function searchProducts(
   query: string,
   maxItems: i32,
-  // thresholdStars: f32 = 0.0,
+  thresholdStars: f32 = 0.0,
 ): ProductSearchResult {
   const productSearchRes = new ProductSearchResult(
     consts.productNameCollection,
@@ -30,11 +30,6 @@ export function searchProducts(
 
     return productSearchRes;
   }
-
-  // const rankedResults = reRankAndFilterSearchResultObjects(
-  //   semanticSearchRes.objects,
-  //   thresholdStars,
-  // );
 
   const unrankedResults = semanticSearchRes.objects;
 

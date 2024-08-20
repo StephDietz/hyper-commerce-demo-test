@@ -2,7 +2,7 @@
 
 Composable-commerce storefront demo to show off the performance of Hypermode's vector search.
 
-Example site: 
+Example site:
 
 [hypermode-commerce.com](https://hypermode-commerce.com)
 
@@ -34,8 +34,7 @@ Hypermode will automatically spin up the embedding model found in `backend/hyper
 An example is provided, named `backend/extras/hyper_toys.csv`, and the corresponding python script to run it is named `backend/extras/ecommerce_populate.py`. Navigate to the subfolder to run them.
 To install dependencies, run `pip install -r requirements.txt` from within that directory.
 
-You'll need to edit the `ecommerce_populate.py` file with your Hypermode project URL and auth token found in your Hypermode console dashboard. 
-
+You'll need to edit the `ecommerce_populate.py` file with your Hypermode project URL and auth token found in your Hypermode console dashboard.
 
 [![hyper-cons](https://github.com/user-attachments/assets/18478278-93bf-479b-955c-c23c7a7cdecb)](hypermode.com)
 
@@ -87,4 +86,3 @@ _NOTES_: Make sure your environment variables are added to your Vercel project.
 - HYPERMODE_API_ENDPOINT
 
 ![hyp-com-env](https://github.com/user-attachments/assets/38264879-b462-44bf-b658-cc6f14000266)
-

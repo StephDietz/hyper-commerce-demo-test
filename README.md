@@ -1,6 +1,6 @@
 # Hyper-Commerce
 
-Composable-commerce storefront demo to show off the performance of Hypermode's vector search.
+Composable-commerce storefront demo to show off the performance of Hypermode's vector search
 
 Example site:
 

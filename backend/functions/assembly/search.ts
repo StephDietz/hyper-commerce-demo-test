@@ -31,16 +31,18 @@ export function searchProducts(
     return productSearchRes;
   }
 
-  const rankedResults = reRankAndFilterSearchResultObjects(
-    semanticSearchRes.objects,
-    thresholdStars,
-  );
+  // const rankedResults = reRankAndFilterSearchResultObjects(
+  //   semanticSearchRes.objects,
+  //   thresholdStars,
+  // );
 
-  for (let i = 0; i < rankedResults.length; i++) {
+  const unrankedResults = semanticSearchRes.objects;
+
+  for (let i = 0; i < unrankedResults.length; i++) {
     const searchObj = getSearchObject(
-      rankedResults[i].key,
-      rankedResults[i].score,
-      rankedResults[i].distance,
+      unrankedResults[i].key,
+      unrankedResults[i].score,
+      unrankedResults[i].distance,
     );
     productSearchRes.searchObjs.unshift(searchObj);
   }
@@ -56,53 +58,53 @@ function getSearchObject(
   return new ProductSearchObject(getProduct(key), score, distance);
 }
 
-function reRankAndFilterSearchResultObjects(
-  objs: collections.CollectionSearchResultObject[],
-  thresholdStars: f32,
-): collections.CollectionSearchResultObject[] {
-  for (let i = 0; i < objs.length; i++) {
-    const starRes = collections.getText(
-      consts.productStarCollection,
-      objs[i].key,
-    );
-    const stars = parseFloat(starRes);
+// function reRankAndFilterSearchResultObjects(
+//   objs: collections.CollectionSearchResultObject[],
+//   thresholdStars: f32,
+// ): collections.CollectionSearchResultObject[] {
+//   for (let i = 0; i < objs.length; i++) {
+//     const starRes = collections.getText(
+//       consts.productStarCollection,
+//       objs[i].key,
+//     );
+//     const stars = parseFloat(starRes);
 
-    const inStockRes = collections.getText(
-      consts.isProductStockedCollection,
-      objs[i].key,
-    );
-    const inStock = inStockRes === "true";
+//     const inStockRes = collections.getText(
+//       consts.isProductStockedCollection,
+//       objs[i].key,
+//     );
+//     const inStock = inStockRes === "true";
 
-    if (!inStock) {
-      objs[i].score *= 0.5;
-    }
-    objs[i].score *= stars * 0.1;
-  }
+//     if (!inStock) {
+//       objs[i].score *= 0.5;
+//     }
+//     objs[i].score *= stars * 0.1;
+//   }
 
-  objs.sort((a, b) => {
-    if (a.score < b.score) {
-      return -1;
-    } else if (a.score > b.score) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
+//   objs.sort((a, b) => {
+//     if (a.score < b.score) {
+//       return -1;
+//     } else if (a.score > b.score) {
+//       return 1;
+//     } else {
+//       return 0;
+//     }
+//   });
 
-  const filteredResults: collections.CollectionSearchResultObject[] = [];
-  for (let i = 0; i < objs.length; i++) {
-    const starRes = collections.getText(
-      consts.productStarCollection,
-      objs[i].key,
-    );
-    const stars = parseFloat(starRes);
-    if (stars >= thresholdStars) {
-      filteredResults.push(objs[i]);
-    }
-  }
+//   const filteredResults: collections.CollectionSearchResultObject[] = [];
+//   for (let i = 0; i < objs.length; i++) {
+//     const starRes = collections.getText(
+//       consts.productStarCollection,
+//       objs[i].key,
+//     );
+//     const stars = parseFloat(starRes);
+//     if (stars >= thresholdStars) {
+//       filteredResults.push(objs[i]);
+//     }
+//   }
 
-  return filteredResults;
-}
+//   return filteredResults;
+// }
 
 export function miniLMEmbed(texts: string[]): f32[][] {
   const model = models.getModel<EmbeddingsModel>(consts.embeddingModel);

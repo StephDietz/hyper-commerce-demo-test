@@ -257,29 +257,65 @@ function upsertCartQuantity(cartItemId: string, quantity: f64): string {
 }
 
 export function addToCart(cartId: string, productId: string): string {
+  // Attempt to retrieve the cart with the provided cartId
   const cart = collections.getText(consts.cartsCollection, cartId);
   const cartItemId = cartId + "_" + productId;
-  if (cart === "") {
-    upsertCart(cartId, productId);
-    upsertCartQuantity(cartItemId, 1);
+
+  // If the cart does not exist, create a new one with the product
+  if (cart === null || cart === "") {
+    const upsertResult = upsertCart(cartId, productId);
+    if (upsertResult !== cartId) {
+      console.log("Failed to create new cart:");
+      return upsertResult;
+    }
+
+    const quantityResult = upsertCartQuantity(cartItemId, 1);
+    if (quantityResult !== cartItemId) {
+      console.log("Failed to set initial quantity:");
+      return quantityResult;
+    }
   } else {
+    // If the cart exists, handle the addition of the product
     const cartItems = cart.split(",");
     if (cartItems.includes(productId)) {
       const cartItemQuantity = collections.getText(
         consts.cartItemsCollection,
         cartItemId,
       );
+
+      // Ensure the cart item quantity is retrieved successfully
+      if (cartItemQuantity === null || cartItemQuantity === "") {
+        console.log("Failed to retrieve cart item quantity for:");
+        return "error";
+      }
+
       const newQuantity = parseFloat(cartItemQuantity) + 1;
-      collections.upsert(
+      const upsertQuantityResult = collections.upsert(
         consts.cartItemsCollection,
         cartItemId,
         newQuantity.toString(),
       );
+
+      if (!upsertQuantityResult.isSuccessful) {
+        console.log("Failed to update quantity:");
+        return upsertQuantityResult.error;
+      }
     } else {
-      upsertCart(cartId, cart + "," + productId);
-      upsertCartQuantity(cartItemId, 1);
+      // Add the product to the existing cart and set its quantity
+      const upsertResult = upsertCart(cartId, cart + "," + productId);
+      if (upsertResult !== cartId) {
+        console.log("Failed to update cart with new product:");
+        return upsertResult;
+      }
+
+      const quantityResult = upsertCartQuantity(cartItemId, 1);
+      if (quantityResult !== cartItemId) {
+        console.log("Failed to add new product quantity:");
+        return quantityResult;
+      }
     }
   }
+
   return "success";
 }
 

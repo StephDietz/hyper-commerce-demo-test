@@ -1,5 +1,5 @@
 import { collections } from "@hypermode/functions-as";
-import { Product, consts } from "./types";
+import { Product, Cart, CartItemObject, consts } from "./types";
 
 export function upsertProduct(
   id: string,
@@ -230,4 +230,82 @@ export function getProducts(ids: string[]): Product[] {
     products.push(getProduct(ids[i]));
   }
   return products;
+}
+
+export function upsertCart(cartId: string, cartItemIds: string): string {
+  const result = collections.upsert(
+    consts.cartsCollection,
+    cartId,
+    cartItemIds,
+  );
+  if (!result.isSuccessful) {
+    return result.error;
+  }
+  return cartId;
+}
+
+function upsertCartQuantity(cartItemId: string, quantity: f64): string {
+  const result = collections.upsert(
+    consts.cartItemsCollection,
+    cartItemId,
+    quantity.toString(),
+  );
+  if (!result.isSuccessful) {
+    return result.error;
+  }
+  return cartItemId;
+}
+
+export function addToCart(cartId: string, productId: string): string {
+  const cart = collections.getText(consts.cartsCollection, cartId);
+  const cartItemId = cartId + "_" + productId;
+  if (cart === "") {
+    upsertCart(cartId, productId);
+    upsertCartQuantity(cartItemId, 1);
+  } else {
+    const cartItems = cart.split(",");
+    if (cartItems.includes(productId)) {
+      const cartItemQuantity = collections.getText(
+        consts.cartItemsCollection,
+        cartItemId,
+      );
+      const newQuantity = parseFloat(cartItemQuantity) + 1;
+      collections.upsert(
+        consts.cartItemsCollection,
+        cartItemId,
+        newQuantity.toString(),
+      );
+    } else {
+      upsertCart(cartId, cart + "," + productId);
+      upsertCartQuantity(cartItemId, 1);
+    }
+  }
+  return "success";
+}
+
+export function removeFromCart(cartId: string, productId: string): string {
+  const cartItemId = cartId + "_" + productId;
+  const result = collections.remove(consts.cartItemsCollection, cartItemId);
+  if (!result.isSuccessful) {
+    return result.error;
+  }
+  return "success";
+}
+export function getCart(cartId: string): Cart {
+  const cartItemIds = collections.getText(consts.cartsCollection, cartId);
+  if (cartItemIds === "") {
+    return new Cart(cartId, []);
+  }
+  const cartItems = cartItemIds.split(",");
+  const items = new Array<CartItemObject>(); // Explicitly declare the type of the array
+  for (let i = 0; i < cartItems.length; i++) {
+    const quantity = collections.getText(
+      consts.cartItemsCollection,
+      cartId + "_" + cartItems[i],
+    );
+    const product = getProduct(cartItems[i]);
+    const cartItemObject = new CartItemObject(product, parseFloat(quantity));
+    items.push(cartItemObject); // Ensure the array is of type 'CartItemObject'
+  }
+  return new Cart(cartId, items);
 }
